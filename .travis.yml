@@ -33,4 +33,4 @@ install:
     - pip install -U platformio
 
 script:
-    - platformio run -e esp01_1m
+    - platformio run -e esp12e

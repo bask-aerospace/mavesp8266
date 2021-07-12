@@ -46,8 +46,8 @@
 const char PROGMEM kTEXTPLAIN[]  = "text/plain";
 const char PROGMEM kTEXTHTML[]   = "text/html";
 const char PROGMEM kACCESSCTL[]  = "Access-Control-Allow-Origin";
-const char PROGMEM kUPLOADFORM[] = "<h1><a href='/'>MAVLink WiFi Bridge</a></h1><form method='POST' action='/upload' enctype='multipart/form-data'><input type='file' name='update'><br><input type='submit' value='Update'></form>";
-const char PROGMEM kHEADER[]     = "<!doctype html><html><head><title>MavLink Bridge</title></head><body><h1><a href='/'>MAVLink WiFi Bridge</a></h1>";
+const char PROGMEM kUPLOADFORM[] = "<form method='POST' action='/upload' enctype='multipart/form-data'><input type='file' name='update'><br><input type='submit' value='Update'></form>";
+const char PROGMEM kHEADER[]     = "<!doctype html><html><head><title>AeroLink WiFi</title><style>body{font-family:Helvetica;color:white;background:#1b1c3b}h1,h2{text-align:center}h1{font-weight:200}h1 a{color:#03A9F4}a{color:white}a:hover{color: #03A9F4}ul{list-style:none;padding:0;text-align:center}li,tr,br{line-height:1.5em;}table{margin:0 auto}footer{position:fixed;bottom:0;margin:8px;width:100%;text-align:center;color:grey}</style><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><h1><a href='/'>Aero<span style='font-weight:bold'>Link</span> WiFi</a></h1>";
 const char PROGMEM kBADARG[]     = "BAD ARGS";
 const char PROGMEM kAPPJSON[]    = "application/json";
 
@@ -105,7 +105,12 @@ void respondOK() {
 void handle_update() {
     webServer.sendHeader("Connection", "close");
     webServer.sendHeader(FPSTR(kACCESSCTL), "*");
-    webServer.send(200, FPSTR(kTEXTHTML), FPSTR(kUPLOADFORM));
+
+    String message = FPSTR(kHEADER);
+    message += FPSTR(kUPLOADFORM);
+    message += "</body>";
+
+    webServer.send(200, FPSTR(kTEXTHTML), message);
 }
 
 //---------------------------------------------------------------------------------
@@ -178,7 +183,7 @@ void handle_upload_status() {
 void handle_getParameters()
 {
     String message = FPSTR(kHEADER);
-    message += "<p>Parameters</p><table><tr><td width=\"240\">Name</td><td>Value</td></tr>";
+    message += "<h2>Parameters</h2><table><tr><th width=\"240\">Name</th><th>Value</th></tr>";
     for(int i = 0; i < MavESP8266Parameters::ID_COUNT; i++) {
         message += "<tr><td>";
         message += getWorld()->getParameters()->getAt(i)->id;
@@ -203,18 +208,19 @@ void handle_getParameters()
 static void handle_root()
 {
     String message = FPSTR(kHEADER);
-    message += "Version: ";
-    char vstr[30];
-    snprintf(vstr, sizeof(vstr), "%u.%u.%u", MAVESP8266_VERSION_MAJOR, MAVESP8266_VERSION_MINOR, MAVESP8266_VERSION_BUILD);
-    message += vstr;
-    message += "<p>\n";
+    
     message += "<ul>\n";
     message += "<li><a href='/getstatus'>Get Status</a>\n";
     message += "<li><a href='/setup'>Setup</a>\n";
     message += "<li><a href='/getparameters'>Get Parameters</a>\n";
     message += "<li><a href='/update'>Update Firmware</a>\n";
     message += "<li><a href='/reboot'>Reboot</a>\n";
-    message += "</ul></body>";
+    message += "</ul>";
+    message += "<footer>Version: ";
+    char vstr[30];
+    snprintf(vstr, sizeof(vstr), "%u.%u.%u", MAVESP8266_VERSION_MAJOR, MAVESP8266_VERSION_MINOR, MAVESP8266_VERSION_BUILD);
+    message += vstr;
+    message += "</footer></body>";
     setNoCacheHeaders();
     webServer.send(200, FPSTR(kTEXTHTML), message);
 }
@@ -223,7 +229,7 @@ static void handle_root()
 static void handle_setup()
 {
     String message = FPSTR(kHEADER);
-    message += "<h1>Setup</h1>\n";
+    message += "<h2>Setup</h2>\n";
     message += "<form action='/setparameters' method='post'>\n";
 
     message += "WiFi Mode:&nbsp;";
@@ -315,7 +321,7 @@ static void handle_getStatus()
     linkStatus* gcsStatus = getWorld()->getGCS()->getStatus();
     linkStatus* vehicleStatus = getWorld()->getVehicle()->getStatus();
     String message = FPSTR(kHEADER);
-    message += "<p>Comm Status</p><table><tr><td width=\"240\">Packets Received from GCS</td><td>";
+    message += "<h2>Comm Status</h2><table><tr><td width=\"240\">Packets Received from GCS</td><td>";
     message += gcsStatus->packets_received;
     message += "</td></tr><tr><td>Packets Sent to GCS</td><td>";
     message += gcsStatus->packets_sent;
@@ -330,7 +336,7 @@ static void handle_getStatus()
     message += "</td></tr><tr><td>Radio Messages</td><td>";
     message += gcsStatus->radio_status_sent;
     message += "</td></tr></table>";
-    message += "<p>System Status</p><table>\n";
+    message += "<h2>System Status</h2><table>\n";
     message += "<tr><td width=\"240\">Flash Size</td><td>";
     message += ESP.getFlashChipRealSize();
     message += "</td></tr>\n";
