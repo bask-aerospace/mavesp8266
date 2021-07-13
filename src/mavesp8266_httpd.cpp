@@ -47,7 +47,7 @@ const char PROGMEM kTEXTPLAIN[]  = "text/plain";
 const char PROGMEM kTEXTHTML[]   = "text/html";
 const char PROGMEM kACCESSCTL[]  = "Access-Control-Allow-Origin";
 const char PROGMEM kUPLOADFORM[] = "<form method='POST' action='/upload' enctype='multipart/form-data'><input type='file' name='update'><br><input type='submit' value='Update'></form>";
-const char PROGMEM kHEADER[]     = "<!doctype html><html><head><title>AeroLink WiFi</title><style>body{font-family:Helvetica;color:white;background:#1b1c3b}h1,h2{text-align:center}h1{font-weight:200}h1 a{color:#03A9F4}a{color:white}a:hover{color: #03A9F4}ul{list-style:none;padding:0;text-align:center}li,tr,br{line-height:1.5em;}table{margin:0 auto}footer{position:fixed;bottom:0;margin:8px;width:100%;text-align:center;color:grey}</style><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><h1><a href='/'>Aero<span style='font-weight:bold'>Link</span> WiFi</a></h1>";
+const char PROGMEM kHEADER[]     = "<!doctype html><html><head><title>AeroLink WiFi</title><style>body{font-family:Helvetica;color:white;background:#1b1c3b}h1,h2{text-align:center}h1{font-weight:200}h1 a{color:#03A9F4}a{color:white}a:hover{color: #03A9F4}ul{list-style:none;padding:0;text-align:center}li,tr,br{line-height:1.5em;}table{margin:0 auto}td:first-child{padding-right:8px}input[type='text']{width:100%}input[type='submit']{float:right}footer{position:fixed;bottom:0;margin:8px;width:100%;text-align:center;color:grey}</style><meta name='viewport' content='width=device-width, initial-scale=1.0'></head><body><h1><a href='/'>Aero<span style='font-weight:bold'>Link</span> WiFi</a></h1>";
 const char PROGMEM kBADARG[]     = "BAD ARGS";
 const char PROGMEM kAPPJSON[]    = "application/json";
 
@@ -230,80 +230,83 @@ static void handle_setup()
 {
     String message = FPSTR(kHEADER);
     message += "<h2>Setup</h2>\n";
-    message += "<form action='/setparameters' method='post'>\n";
+    message += "<form action='/setparameters' method='post'>";
 
-    message += "WiFi Mode:&nbsp;";
-    message += "<input type='radio' name='mode' value='0'";
+    message += "<table>";
+    message += "<tr><td>WiFi Mode</td>";
+    message += "<td><input type='radio' name='mode' value='0'";
     if (getWorld()->getParameters()->getWifiMode() == WIFI_MODE_AP) {
         message += " checked";
     }
-    message += ">AccessPoint\n";
+
+    message += ">AccessPoint&nbsp;&nbsp;";
     message += "<input type='radio' name='mode' value='1'";
     if (getWorld()->getParameters()->getWifiMode() == WIFI_MODE_STA) {
         message += " checked";
     }
-    message += ">Station<br>\n";
+    message += ">Station</td></tr>";
     
-    message += "AP SSID:&nbsp;";
-    message += "<input type='text' name='ssid' value='";
+    message += "<tr><td>AP SSID</td>";
+    message += "<td><input type='text' name='ssid' value='";
     message += getWorld()->getParameters()->getWifiSsid();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "AP Password (min len 8):&nbsp;";
-    message += "<input type='text' name='pwd' value='";
+    message += "<tr><td>AP Password</td>";
+    message += "<td><input type='text' name='pwd' value='";
     message += getWorld()->getParameters()->getWifiPassword();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "WiFi Channel:&nbsp;";
-    message += "<input type='text' name='channel' value='";
+    message += "<tr><td>WiFi Channel</td>";
+    message += "<td><input type='text' name='channel' value='";
     message += getWorld()->getParameters()->getWifiChannel();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Station SSID:&nbsp;";
-    message += "<input type='text' name='ssidsta' value='";
+    message += "<tr><td>Station SSID</td>";
+    message += "<td><input type='text' name='ssidsta' value='";
     message += getWorld()->getParameters()->getWifiStaSsid();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Station Password:&nbsp;";
-    message += "<input type='text' name='pwdsta' value='";
+    message += "<tr><td>Station Password</td>";
+    message += "<td><input type='text' name='pwdsta' value='";
     message += getWorld()->getParameters()->getWifiStaPassword();
-    message += "'><br>";
+    message += "'></td></tr>";
 
     IPAddress IP;    
-    message += "Station IP:&nbsp;";
-    message += "<input type='text' name='ipsta' value='";
+    message += "<tr><td>Station IP</td>";
+    message += "<td><input type='text' name='ipsta' value='";
     IP = getWorld()->getParameters()->getWifiStaIP();
     message += IP.toString();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Station Gateway:&nbsp;";
-    message += "<input type='text' name='gatewaysta' value='";
+    message += "<tr><td>Station Gateway</td>";
+    message += "<td><input type='text' name='gatewaysta' value='";
     IP = getWorld()->getParameters()->getWifiStaGateway();
     message += IP.toString();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Station Subnet:&nbsp;";
-    message += "<input type='text' name='subnetsta' value='";
+    message += "<tr><td>Station Subnet</td>";
+    message += "<td><input type='text' name='subnetsta' value='";
     IP = getWorld()->getParameters()->getWifiStaSubnet();
     message += IP.toString();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Host Port:&nbsp;";
-    message += "<input type='text' name='hport' value='";
+    message += "<tr><td>Host Port</td>";
+    message += "<td><input type='text' name='hport' value='";
     message += getWorld()->getParameters()->getWifiUdpHport();
-    message += "'><br>";
+    message += "'></td></tr>";
 
-    message += "Client Port:&nbsp;";
-    message += "<input type='text' name='cport' value='";
+    message += "<tr><td>Client Port</td>";
+    message += "<td><input type='text' name='cport' value='";
     message += getWorld()->getParameters()->getWifiUdpCport();
-    message += "'><br>";
+    message += "'></td></tr>";
     
-    message += "Baudrate:&nbsp;";
-    message += "<input type='text' name='baud' value='";
+    message += "<tr><td>Baudrate</td>";
+    message += "<td><input type='text' name='baud' value='";
     message += getWorld()->getParameters()->getUartBaudRate();
-    message += "'><br>";
+    message += "'></td></tr>";
     
-    message += "<input type='submit' value='Save'>";
+    message += "<tr><td colspan='2'><input type='submit' value='Save'></td></tr>";
+    message += "</table>";
     message += "</form>";
     setNoCacheHeaders();
     webServer.send(200, FPSTR(kTEXTHTML), message);
